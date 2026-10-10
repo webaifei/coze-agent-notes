@@ -24,6 +24,16 @@
 | [03-protocols-and-runtime.md](docs/03-protocols-and-runtime.md) | frontier JSON-RPC、ACP、会话映射、凭证模型、框架适配 |
 | [04-troubleshooting.md](docs/04-troubleshooting.md) | 日志地图 + 三种典型故障的判别口诀 |
 | [05-ecosystem.md](docs/05-ecosystem.md) | 官方仓库版图；coze-studio / CozeLoop SDK / DAG 与 agent loop 的区别 |
+| [流程图](diagrams/coze-desktop-agent-sequence.html) | 从输入到回复的端到端时序（交互式 HTML） |
+
+## 流程图
+
+![扣子桌面端从输入到回复的完整链路](diagrams/preview.png)
+
+- 交互版（内联 SVG，明暗主题 / 路径高亮 / 搜索缩放 / 导出 PNG·SVG）：[diagrams/coze-desktop-agent-sequence.html](diagrams/coze-desktop-agent-sequence.html)
+- 可编辑源：[diagrams/coze-desktop-agent-sequence.json](diagrams/coze-desktop-agent-sequence.json)
+
+> 8 个参与者超出画布宽度上限，故收敛为 6 列核心链路；「用户」与「本地配置」两个角色以卡片说明。
 
 ## 关键事实速览
 

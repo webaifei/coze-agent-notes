@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "扣子桌面端：从输入到回复的完整链路",
+    "locale": "zh-CN",
+    "output": "diagrams/coze-desktop-agent-sequence.html",
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/webaifei/coze-agent-notes",
+      "provider": "github",
+      "revision": "74d560a82a3471f3095389fd28e1cf6b9e1a7a10"
+    }
+  },
+  "participants": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "客户端",
+      "sublabel": "Web SPA",
+      "sources": [
+        {
+          "path": "docs/02-message-dataflow.md",
+          "label": "第 1-2 跳：组装与提交"
+        }
+      ]
+    },
+    {
+      "id": "cloud",
+      "type": "backend",
+      "label": "Coze 云端",
+      "sublabel": "Claw 编排",
+      "sources": [
+        {
+          "path": "docs/02-message-dataflow.md",
+          "label": "第 3 跳：云端编排"
+        }
+      ]
+    },
+    {
+      "id": "fw",
+      "type": "messagebus",
+      "label": "frontier",
+      "sublabel": "WebSocket",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "云端 ↔ bridge 的 JSON-RPC"
+        }
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "coze-bridge",
+      "sublabel": "本机桥接",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "帧格式与分发规则"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "本地 Agent",
+      "sublabel": "ACP 进程",
+      "sources": [
+        {
+          "path": "docs/02-message-dataflow.md",
+          "label": "第 5-7 跳：ACP 与 agent loop"
+        }
+      ]
+    },
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "模型 API",
+      "sublabel": "DeepSeek",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "由本地配置决定"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 240,
+      "label": "① 提交与路由"
+    },
+    {
+      "from": 240,
+      "to": 360,
+      "label": "② 下发到设备"
+    },
+    {
+      "from": 360,
+      "to": 510,
+      "label": "③ 本地 agent 循环"
+    },
+    {
+      "from": 510,
+      "to": 620,
+      "label": "④ 流式回传"
+    }
+  ],
+  "messages": [
+    {
+      "id": "submit",
+      "from": "ui",
+      "to": "cloud",
+      "y": 165,
+      "label": "提交消息",
+      "variant": "emphasis",
+      "note": "POST /api/coze_claw/message/chat，body 含 session_id / content / device_info"
+    },
+    {
+      "id": "message-id",
+      "from": "cloud",
+      "to": "ui",
+      "y": 195,
+      "label": "message_id",
+      "variant": "return"
+    },
+    {
+      "id": "route",
+      "from": "cloud",
+      "to": "fw",
+      "y": 225,
+      "label": "按设备路由",
+      "variant": "default"
+    },
+    {
+      "id": "prompt-down",
+      "from": "fw",
+      "to": "bridge",
+      "y": 255,
+      "label": "session/prompt",
+      "variant": "emphasis",
+      "note": "prompt 文本外层套 <coze-context> 信封，携带 sender / session / message 标识"
+    },
+    {
+      "id": "acp-init",
+      "from": "bridge",
+      "to": "agent",
+      "y": 285,
+      "label": "spawn + initialize",
+      "variant": "default",
+      "note": "惰性拉起：首次发消息才 spawn"
+    },
+    {
+      "id": "agent-info",
+      "from": "agent",
+      "to": "bridge",
+      "y": 315,
+      "label": "agentInfo",
+      "variant": "return"
+    },
+    {
+      "id": "acp-prompt",
+      "from": "bridge",
+      "to": "agent",
+      "y": 345,
+      "label": "ACP session/prompt",
+      "variant": "emphasis"
+    },
+    {
+      "id": "llm-call",
+      "from": "agent",
+      "to": "model",
+      "y": 375,
+      "label": "chat/completions",
+      "variant": "emphasis",
+      "note": "provider 与凭证来自本机 config.yaml + .env，不由云端下发"
+    },
+    {
+      "id": "llm-reply",
+      "from": "model",
+      "to": "agent",
+      "y": 405,
+      "label": "tool_call / token",
+      "variant": "return"
+    },
+    {
+      "id": "llm-again",
+      "from": "agent",
+      "to": "model",
+      "y": 435,
+      "label": "回灌后再次推理",
+      "variant": "emphasis",
+      "note": "本地执行工具后把结果送回模型"
+    },
+    {
+      "id": "llm-final",
+      "from": "model",
+      "to": "agent",
+      "y": 465,
+      "label": "最终答案",
+      "variant": "return"
+    },
+    {
+      "id": "acp-update",
+      "from": "agent",
+      "to": "bridge",
+      "y": 495,
+      "label": "session/update ×737",
+      "variant": "emphasis",
+      "note": "ACP 通知，NDJSON 一行一帧"
+    },
+    {
+      "id": "end-turn",
+      "from": "agent",
+      "to": "bridge",
+      "y": 525,
+      "label": "end_turn",
+      "variant": "return"
+    },
+    {
+      "id": "up-frame",
+      "from": "bridge",
+      "to": "fw",
+      "y": 555,
+      "label": "上行 session/update",
+      "variant": "default"
+    },
+    {
+      "id": "render",
+      "from": "fw",
+      "to": "ui",
+      "y": 585,
+      "label": "流式渲染到屏幕",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "ui",
+      "from": 162,
+      "to": 590,
+      "type": "frontend"
+    },
+    {
+      "participant": "cloud",
+      "from": 162,
+      "to": 246,
+      "type": "backend"
+    },
+    {
+      "participant": "fw",
+      "from": 250,
+      "to": 580,
+      "type": "messagebus"
+    },
+    {
+      "participant": "bridge",
+      "from": 280,
+      "to": 560,
+      "type": "backend"
+    },
+    {
+      "participant": "agent",
+      "from": 310,
+      "to": 530,
+      "type": "backend"
+    },
+    {
+      "participant": "model",
+      "from": 372,
+      "to": 470,
+      "type": "cloud"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "关键事实",
+      "items": [
+        "renderer 从不直连本地 bridge，它只与云端通信",
+        "bridge 只做协议翻译：frontier JSON-RPC ⟷ ACP，不做推理",
+        "真正的 agent loop 在本地进程里，它甚至不知道 Coze 的存在"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "三种协议",
+      "items": [
+        "前端 → 云端：HTTPS + JSON（/api/coze_claw/message/chat）",
+        "云端 ↔ bridge：JSON-RPC 2.0 over WebSocket（frontier）",
+        "bridge ↔ 本地 agent：ACP over stdio，NDJSON 一行一帧"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "折叠掉的两个角色",
+      "items": [
+        "用户：输入发生在客户端输入框，结果也渲染在同一侧",
+        "本地配置与工作区：config.yaml / .env 决定模型与凭证，AGENTS.md 即系统提示词",
+        "二者都在本机，不构成独立一跳，故未单列参与者"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "排查锚点",
+      "items": [
+        "日志里没有 session/prompt：消息没下到设备（deviceId 变了）",
+        "只有一帧约 367 字节的 update：模型调用失败，去看 request_dump",
+        "70004 get claw failed：本地目录只是孤儿，云端已不认"
+      ]
+    }
+  ]
+}
