@@ -5,6 +5,19 @@
 > ⚠️ 独立研究笔记，**非官方文档**。内容基于本机安装的扣子桌面版（Electron，`cn.coze.desktop`）的 `app.asar`、本地运行时 `~/.coze` 与 `~/.hermes` 的代码与日志观测。
 > 所有个人标识（user_id / agentId / deviceId / 会话 ID / 本机路径）均已脱敏为 `<...>` 占位符；任何 token、密钥一律未收录。
 
+## 在线站点
+
+GitHub Pages：https://webaifei.github.io/coze-agent-notes/
+
+由仓库根目录的 Jekyll 构建发布（`_config.yml` 提供站点元信息）。三张交互式图在线上可直接打开：
+
+- [时序图](https://webaifei.github.io/coze-agent-notes/diagrams/coze-desktop-agent-sequence.html)
+- [架构图](https://webaifei.github.io/coze-agent-notes/diagrams/coze-desktop-agent-architecture.html)
+- [生命周期图](https://webaifei.github.io/coze-agent-notes/diagrams/coze-device-agent-lifecycle.html)
+
+> 仓库另带一个 GitHub Actions 工作流（`.github/workflows/pages.yml`）与 `scripts/build_site.py`，
+> 可在 Pages 源切换为 "GitHub Actions" 时提供一套自带样式的静态站点。
+
 ## 一句话结论
 
 ```
