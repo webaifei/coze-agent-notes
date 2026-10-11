@@ -1,0 +1,254 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "设备配对与 Agent 的生命周期",
+    "locale": "zh-CN",
+    "output": "diagrams/coze-device-agent-lifecycle.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/webaifei/coze-agent-notes",
+      "provider": "github",
+      "revision": "27f526d776eec18bc5364bdb71e538b3357042fe"
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "正常生命周期"
+    },
+    {
+      "id": "interrupt",
+      "label": "中断与重连"
+    },
+    {
+      "id": "terminal",
+      "label": "终态"
+    }
+  ],
+  "states": [
+    {
+      "id": "unpaired",
+      "type": "start",
+      "label": "未配对",
+      "sublabel": "bridge 未连云端",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "起点",
+      "sources": [
+        {
+          "path": "docs/04-troubleshooting.md",
+          "label": "判定口诀 1"
+        }
+      ]
+    },
+    {
+      "id": "paired",
+      "type": "active",
+      "label": "设备已配对",
+      "sublabel": "deviceId 已注册",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "绑定",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "设备与绑定"
+        }
+      ]
+    },
+    {
+      "id": "online",
+      "type": "active",
+      "label": "设备在线",
+      "sublabel": "frontier 长连接",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "连接",
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "进程与端口"
+        }
+      ]
+    },
+    {
+      "id": "registered",
+      "type": "active",
+      "label": "Agent 已注册",
+      "sublabel": "云端记录 + 本地目录",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "创建",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "agent 配置"
+        }
+      ]
+    },
+    {
+      "id": "visible",
+      "type": "success",
+      "label": "客户端可见",
+      "sublabel": "可收发消息",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "就绪",
+      "sources": [
+        {
+          "path": "docs/04-troubleshooting.md",
+          "label": "判定口诀 3"
+        }
+      ]
+    },
+    {
+      "id": "offline",
+      "type": "waiting",
+      "label": "连接中断",
+      "sublabel": "WS 断开",
+      "lane": "interrupt",
+      "col": 2,
+      "tag": "等待",
+      "sources": [
+        {
+          "path": "docs/04-troubleshooting.md",
+          "label": "判定口诀 1"
+        }
+      ]
+    },
+    {
+      "id": "claw-gone",
+      "type": "failure",
+      "label": "云端已删除",
+      "sublabel": "deleteReason: agent_deleted",
+      "lane": "terminal",
+      "col": 3,
+      "tag": "不可逆",
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "agent 配置"
+        }
+      ]
+    },
+    {
+      "id": "orphan",
+      "type": "failure",
+      "label": "本地目录成孤儿",
+      "sublabel": "客户端看不到，但文件还在",
+      "lane": "terminal",
+      "col": 4,
+      "tag": "残留",
+      "sources": [
+        {
+          "path": "docs/04-troubleshooting.md",
+          "label": "判定口诀 3"
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t-pair",
+      "from": "unpaired",
+      "to": "paired",
+      "label": "npx coze-bridge"
+    },
+    {
+      "id": "t-connect",
+      "from": "paired",
+      "to": "online",
+      "label": "拿到 accessKey"
+    },
+    {
+      "id": "t-create",
+      "from": "online",
+      "to": "registered",
+      "label": "_agent/create"
+    },
+    {
+      "id": "t-bind",
+      "from": "registered",
+      "to": "visible",
+      "label": "绑定 deviceId",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t-drop",
+      "from": "online",
+      "to": "offline",
+      "label": "WS 断开",
+      "variant": "security",
+      "route": "drop"
+    },
+    {
+      "id": "t-reconnect",
+      "from": "offline",
+      "to": "online",
+      "label": "指数退避重连",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t-delete",
+      "from": "registered",
+      "to": "claw-gone",
+      "label": "客户端删除",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "t-keep-files",
+      "from": "claw-gone",
+      "to": "orphan",
+      "label": "本地文件不删",
+      "variant": "dashed"
+    },
+    {
+      "id": "t-redid",
+      "from": "visible",
+      "to": "orphan",
+      "label": "deviceId 变更 · 旧绑定失效",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "为什么客户端看不到，本地却还有目录",
+      "items": [
+        "可见性 = 云端仍有记录 且 deviceId 绑定匹配，本地目录不是依据",
+        "云端删除会写 deletedAt + deleteReason，客户端随即不可见",
+        "本地 ~/.coze/agents/<id>/ 是工作目录，删除 agent 不会删它"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "可恢复 vs 不可逆",
+      "items": [
+        "WS 断开是可恢复的：指数退避重连后回到设备在线",
+        "云端删除不可逆：只能重建 agent，不能复活旧的",
+        "设备重新注册会换新 deviceId，旧绑定全部失效"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "对应的日志信号",
+      "items": [
+        "连接中断：getaddrinfo ENOTFOUND frontier.coze.cn / ws not open",
+        "云端已不认：_agent/detail 返回 70004 get claw failed",
+        "删除残留：config.json 里出现 deletedAt 与 deleteReason"
+      ]
+    }
+  ]
+}

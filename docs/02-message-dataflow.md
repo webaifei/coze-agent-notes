@@ -2,6 +2,12 @@
 
 以本机实测的一轮为例，输入是：**「查看热门服务」**。
 
+## 交互式时序图
+
+![端到端 8 跳](../diagrams/preview-sequence.png)
+
+[打开交互版](../diagrams/coze-desktop-agent-sequence.html) · [可编辑源](../diagrams/coze-desktop-agent-sequence.json)
+
 ## ① 输入框 → Renderer：组装消息
 
 Composer 把输入整理成一份 payload（`app.asar` → `renderer/static/js/async/7754.*.js`）：

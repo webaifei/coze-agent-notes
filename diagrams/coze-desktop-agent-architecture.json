@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "扣子桌面端：组件、端口与责任边界",
+    "locale": "zh-CN",
+    "output": "diagrams/coze-desktop-agent-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/webaifei/coze-agent-notes",
+      "provider": "github",
+      "revision": "27f526d776eec18bc5364bdb71e538b3357042fe"
+    }
+  },
+  "layout": {
+    "mode": "grid",
+    "cols": 4,
+    "cellW": 176,
+    "cellH": 92,
+    "gapX": 34,
+    "gapY": 76
+  },
+  "components": [
+    {
+      "id": "gw",
+      "type": "cloud",
+      "label": "Coze 网关",
+      "sublabel": "/api/coze_claw/*",
+      "row": 0,
+      "col": 0,
+      "sources": [
+        {
+          "path": "docs/02-message-dataflow.md",
+          "label": "第 2 跳"
+        }
+      ]
+    },
+    {
+      "id": "claw",
+      "type": "backend",
+      "label": "Claw 编排",
+      "sublabel": "身份 · 会话 · 任务",
+      "row": 0,
+      "col": 1,
+      "sources": [
+        {
+          "path": "docs/02-message-dataflow.md",
+          "label": "第 3 跳"
+        }
+      ]
+    },
+    {
+      "id": "frontier",
+      "type": "messagebus",
+      "label": "frontier 网关",
+      "sublabel": "wss://frontier.coze.cn",
+      "row": 0,
+      "col": 2,
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "JSON-RPC over WS"
+        }
+      ]
+    },
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "模型 API",
+      "sublabel": "DeepSeek · Anthropic",
+      "row": 0,
+      "col": 3,
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "由本地配置决定"
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "客户端 Renderer",
+      "sublabel": "打包 Web SPA",
+      "row": 1,
+      "col": 0,
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "责任边界"
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "type": "backend",
+      "label": "桌面主进程",
+      "sublabel": "Electron main",
+      "row": 1,
+      "col": 1,
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "与 bridge 的关系"
+        }
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "coze-bridge",
+      "sublabel": "127.0.0.1:50337",
+      "row": 1,
+      "col": 2,
+      "tag": "ACP 客户端",
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "进程与端口"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "本地 Agent 进程",
+      "sublabel": "hermes-acp · codex-acp",
+      "row": 1,
+      "col": 3,
+      "sources": [
+        {
+          "path": "docs/03-protocols-and-runtime.md",
+          "label": "框架适配"
+        }
+      ]
+    },
+    {
+      "id": "daemon",
+      "type": "backend",
+      "label": "coze-daemon",
+      "sublabel": "127.0.0.1:49951/rpc",
+      "row": 2,
+      "col": 1,
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "进程与端口"
+        }
+      ]
+    },
+    {
+      "id": "drive",
+      "type": "backend",
+      "label": "cozedrive",
+      "sublabel": "127.0.0.1:49918",
+      "row": 2,
+      "col": 2,
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "进程与端口"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "本地配置与工作区",
+      "sublabel": "~/.coze · ~/.hermes",
+      "row": 2,
+      "col": 3,
+      "sources": [
+        {
+          "path": "docs/01-architecture.md",
+          "label": "落盘位置"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "本机",
+      "wraps": [
+        "ui",
+        "main",
+        "bridge",
+        "agent",
+        "daemon",
+        "drive",
+        "store"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Coze 云",
+      "wraps": [
+        "gw",
+        "claw",
+        "frontier",
+        "model"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "本地 IPC :50337 · Bearer bridge.token",
+      "wraps": [
+        "main",
+        "bridge"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-to-gw",
+      "from": "ui",
+      "to": "gw",
+      "label": "POST message/chat",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "gw-to-claw",
+      "from": "gw",
+      "to": "claw",
+      "label": "路由"
+    },
+    {
+      "id": "claw-to-frontier",
+      "from": "claw",
+      "to": "frontier",
+      "label": "按 deviceId 下发"
+    },
+    {
+      "id": "frontier-to-bridge",
+      "from": "frontier",
+      "to": "bridge",
+      "label": "JSON-RPC over WebSocket",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "bridge-to-agent",
+      "from": "bridge",
+      "to": "agent",
+      "label": "ACP over stdio",
+      "variant": "emphasis"
+    },
+    {
+      "id": "agent-to-model",
+      "from": "agent",
+      "to": "model",
+      "label": "chat/completions",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "ui-to-main",
+      "from": "ui",
+      "to": "main",
+      "label": "IPC"
+    },
+    {
+      "id": "main-to-bridge",
+      "from": "main",
+      "to": "bridge",
+      "label": "启动 · 保活"
+    },
+    {
+      "id": "agent-to-store",
+      "from": "agent",
+      "to": "store",
+      "label": "读写配置 / 工作区",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "main-to-daemon",
+      "from": "main",
+      "to": "daemon",
+      "label": "本地 JSON-RPC",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "main-to-drive",
+      "from": "main",
+      "to": "drive",
+      "label": "云盘同步",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "三条通道",
+      "items": [
+        "客户端 → 云端：HTTPS，发消息与拉会话",
+        "云端 ↔ bridge：WebSocket 上的 JSON-RPC 2.0",
+        "bridge ↔ 本地 agent：stdio 上的 ACP"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "端口一览",
+      "items": [
+        "coze-bridge 127.0.0.1:50337 — 本地 IPC，需 Bearer token",
+        "coze-daemon 127.0.0.1:49951/rpc — 本地控制面",
+        "cozedrive 127.0.0.1:49918 — 云盘服务"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "责任边界",
+      "items": [
+        "bridge 不做推理，只做协议翻译：frontier JSON-RPC ⟷ ACP",
+        "只有本地 agent 进程知道模型与凭证的存在",
+        "云端只负责身份、会话与路由，不执行本机命令"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "容易误判的地方",
+      "items": [
+        "renderer 从不直连 bridge，中间隔着云端",
+        "bridge 是 WebSocket 客户端，不监听入站业务端口",
+        "本地 agent 进程是懒加载：首次发消息才 spawn"
+      ]
+    }
+  ]
+}

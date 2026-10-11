@@ -11,6 +11,14 @@
 | 设备绑定与 agent 列表 | `curl -H "Authorization: Bearer $(cat ~/.coze/bridge/bridge.token)" http://127.0.0.1:<bridgePort>/status` |
 | 云端链路 id | 每帧里的 `logid` / `logidNew` |
 
+## 生命周期图
+
+![设备配对与 Agent 生命周期](../diagrams/preview-lifecycle.png)
+
+[打开交互版](../diagrams/coze-device-agent-lifecycle.html) · [可编辑源](../diagrams/coze-device-agent-lifecycle.json)
+
+这张图解释了第 3 条口诀：**可见性取决于云端记录与 deviceId 绑定**，WS 断开是可恢复的，云端删除不可逆，而本地目录只是工作区、不会随之删除。
+
 ## 三种典型故障的判别口诀
 
 ### 1. 发了没反应，日志里根本没有 `session/prompt`

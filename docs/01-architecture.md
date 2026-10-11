@@ -36,6 +36,12 @@ flowchart TB
     UI -.-> DR
 ```
 
+## 交互式架构图
+
+![组件、端口与责任边界](../diagrams/preview-architecture.png)
+
+[打开交互版](../diagrams/coze-desktop-agent-architecture.html) · [可编辑源](../diagrams/coze-desktop-agent-architecture.json)
+
 ## 责任边界
 
 | 组件 | 位置 | 职责 | 不负责 |

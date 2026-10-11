@@ -1,0 +1,60 @@
+:root{
+  --bg:#ffffff; --fg:#1f2328; --muted:#59636e; --line:#d8dee4;
+  --card:#f6f8fa; --accent:#0969da; --code-bg:#f6f8fa; --code-fg:#1f2328;
+  --max:920px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#30363d;
+    --card:#161b22; --accent:#4493f8; --code-bg:#161b22; --code-fg:#e6edf3;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Segoe UI,Helvetica,Arial,sans-serif;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:sticky; top:0; z-index:10; display:flex; flex-wrap:wrap; gap:14px;
+  align-items:center; padding:12px 20px; border-bottom:1px solid var(--line);
+  background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(8px);
+}
+.brand{font-weight:600;color:var(--fg)}
+.topbar nav{display:flex;flex-wrap:wrap;gap:12px;font-size:14px}
+.topbar nav a{color:var(--muted)}
+.topbar nav a.on{color:var(--fg);font-weight:600}
+.wrap{max-width:var(--max);margin:0 auto;padding:28px 20px}
+.foot{color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:40px}
+h1,h2,h3,h4{line-height:1.3;margin:1.6em 0 .6em}
+h1{font-size:1.7rem;margin-top:.2em}
+h2{font-size:1.25rem;padding-bottom:.3em;border-bottom:1px solid var(--line)}
+h3{font-size:1.05rem}
+p{margin:.9em 0}
+ul,ol{padding-left:1.5em}
+li{margin:.28em 0}
+code{
+  background:var(--code-bg); color:var(--code-fg); padding:.15em .4em;
+  border-radius:5px; font:.88em/1.5 ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,monospace;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:13px 15px; overflow:auto;
+}
+pre code{background:none;padding:0;font-size:.85em}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.94em;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+th{background:var(--card);font-weight:600}
+blockquote{
+  margin:1em 0; padding:.4em 1em; border-left:3px solid var(--line);
+  color:var(--muted); background:var(--card); border-radius:0 6px 6px 0;
+}
+blockquote p{margin:.3em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}
+pre.mermaid{
+  background:var(--bg); border:1px solid var(--line); text-align:center;
+  font-family:ui-monospace,Menlo,monospace; font-size:.82em; color:var(--muted);
+}

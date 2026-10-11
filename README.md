@@ -24,16 +24,35 @@
 | [03-protocols-and-runtime.md](docs/03-protocols-and-runtime.md) | frontier JSON-RPC、ACP、会话映射、凭证模型、框架适配 |
 | [04-troubleshooting.md](docs/04-troubleshooting.md) | 日志地图 + 三种典型故障的判别口诀 |
 | [05-ecosystem.md](docs/05-ecosystem.md) | 官方仓库版图；coze-studio / CozeLoop SDK / DAG 与 agent loop 的区别 |
-| [流程图](diagrams/coze-desktop-agent-sequence.html) | 从输入到回复的端到端时序（交互式 HTML） |
+| [时序图](diagrams/coze-desktop-agent-sequence.html) | 从输入到回复的端到端时序 |
+| [架构图](diagrams/coze-desktop-agent-architecture.html) | 组件、端口与责任边界 |
+| [生命周期图](diagrams/coze-device-agent-lifecycle.html) | 设备配对与 Agent 的创建 / 删除 |
 
-## 流程图
+## 图
 
-![扣子桌面端从输入到回复的完整链路](diagrams/preview.png)
+三张交互式图（内联 SVG，明暗主题 / 路径高亮 / 搜索缩放 / 导出 PNG·SVG），源文件是对应的 JSON。
 
-- 交互版（内联 SVG，明暗主题 / 路径高亮 / 搜索缩放 / 导出 PNG·SVG）：[diagrams/coze-desktop-agent-sequence.html](diagrams/coze-desktop-agent-sequence.html)
-- 可编辑源：[diagrams/coze-desktop-agent-sequence.json](diagrams/coze-desktop-agent-sequence.json)
+### 1. 时序图 —— 从输入到回复
+
+![端到端时序](diagrams/preview-sequence.png)
+
+[打开交互版](diagrams/coze-desktop-agent-sequence.html) · [可编辑源](diagrams/coze-desktop-agent-sequence.json)
 
 > 8 个参与者超出画布宽度上限，故收敛为 6 列核心链路；「用户」与「本地配置」两个角色以卡片说明。
+
+### 2. 架构图 —— 组件、端口与责任边界
+
+![组件与端口](diagrams/preview-architecture.png)
+
+[打开交互版](diagrams/coze-desktop-agent-architecture.html) · [可编辑源](diagrams/coze-desktop-agent-architecture.json)
+
+### 3. 生命周期图 —— 设备配对与 Agent 的生死
+
+![设备与 Agent 生命周期](diagrams/preview-lifecycle.png)
+
+[打开交互版](diagrams/coze-device-agent-lifecycle.html) · [可编辑源](diagrams/coze-device-agent-lifecycle.json)
+
+> 这张图解释了「客户端看不到，但本地还有目录」：可见性取决于云端记录与 deviceId 绑定，本地目录只是工作区。
 
 ## 关键事实速览
 
